@@ -157,6 +157,7 @@ impl ComponentStorage {
         let size = comps.iter().map(|c| self.component_sizes[c.0 as usize] as u64).fold(0u64, |acc, it| acc + it);
         assert!(size < u16::max_value() as u64);
 
+        self.entity_id_cache.push(IdAllocator::new());
         self.entity_type_sizes.push(size as u16);
         self.entity_type_data.push(Vec::with_capacity(size as usize * 128));
 
