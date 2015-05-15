@@ -213,11 +213,13 @@ impl ComponentStorage {
         for (comp_id, index) in component_index.iter_mut().enumerate() {
             // don't bother looking up to see if this component is part of the entity type data,
             // no use wasting cache on it, it just adds yet another hashmap lookup.
+            //
+            // it's ok to not look it up, because if the id is part of the entity type, then all
+            // we're doing is returning an id that was never used to the pool. while this may be
+            // inefficient, `compact` should take care of it later.
             for ent in ents {
-                let id = index.remove(ent);
-                match id {
-                    Some(id) => component_index_cache[comp_id as usize].free(id as u64),
-                    None => { }
+                if let Some(id) = index.remove(ent) {
+                    component_index_cache[comp_id as usize].free(id as u64);
                 }
             }
         }
